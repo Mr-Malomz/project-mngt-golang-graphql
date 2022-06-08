@@ -1,0 +1,56 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Owner {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+}
+
+type Project {
+  id: ID!
+  ownerId: ID!
+  name: String!
+  description: String!
+  status: Status!
+}
+
+type Query {
+  owners: [Owner!]!
+  projects: [Project!]!
+  owner(input: FetchOwner): Owner!
+  project(input: FetchProject): Project!
+}
+
+enum Status {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+input FetchOwner {
+  id: ID!
+}
+
+input FetchProject {
+  id: ID!
+}
+
+input NewOwner {
+  name: String!
+  email: String!
+  phone: String!
+}
+
+input NewProject {
+  ownerId: ID!
+  name: String!
+  description: String!
+  status: Status!
+}
+
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+}
