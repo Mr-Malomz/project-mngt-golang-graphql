@@ -3,14 +3,14 @@
 # https://gqlgen.com/getting-started/
 
 type Owner {
-  id: ID!
+  _id: String!
   name: String!
   email: String!
   phone: String!
 }
 
 type Project {
-  id: ID!
+  _id: String!
   ownerId: ID!
   name: String!
   description: String!
@@ -31,11 +31,11 @@ enum Status {
 }
 
 input FetchOwner {
-  id: ID!
+  id: String!
 }
 
 input FetchProject {
-  id: ID!
+  id: String!
 }
 
 input NewOwner {
@@ -52,5 +52,6 @@ input NewProject {
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createProject(input: NewProject!): Project!
+  createOwner(input: NewOwner!): Owner!
 }

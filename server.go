@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"project-mngt-golang-graphql/graph"
-	"project-mngt-golang-graphql/graph/generated"
+	"project-mngt-golang-graphql-gin/graph"
+	"project-mngt-golang-graphql-gin/graph/generated"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
