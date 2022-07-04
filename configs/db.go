@@ -44,7 +44,7 @@ func colHelper(db *DB, collectionName string) *mongo.Collection {
 	return db.client.Database("projectMngt").Collection(collectionName)
 }
 
-func (db *DB) CreateProject(input *model.NewProject) *model.Project {
+func (db *DB) CreateProject(input *model.NewProject) (*model.Project, error) {
 	collection := colHelper(db, "project")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -52,19 +52,21 @@ func (db *DB) CreateProject(input *model.NewProject) *model.Project {
 	res, err := collection.InsertOne(ctx, input)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return &model.Project{
+	project := &model.Project{
 		ID:          res.InsertedID.(primitive.ObjectID).Hex(),
 		OwnerID:     input.OwnerID,
 		Name:        input.Name,
 		Description: input.Description,
 		Status:      model.StatusNotStarted,
 	}
+
+	return project, err
 }
 
-func (db *DB) CreateOwner(input *model.NewOwner) *model.Owner {
+func (db *DB) CreateOwner(input *model.NewOwner) (*model.Owner, error) {
 	collection := colHelper(db, "owner")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -72,18 +74,20 @@ func (db *DB) CreateOwner(input *model.NewOwner) *model.Owner {
 	res, err := collection.InsertOne(ctx, input)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return &model.Owner{
+	owner := &model.Owner{
 		ID:    res.InsertedID.(primitive.ObjectID).Hex(),
 		Name:  input.Name,
 		Email: input.Email,
 		Phone: input.Phone,
 	}
+
+	return owner, err
 }
 
-func (db *DB) GetOwners() []*model.Owner {
+func (db *DB) GetOwners() ([]*model.Owner, error) {
 	collection := colHelper(db, "owner")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var owners []*model.Owner
@@ -92,7 +96,7 @@ func (db *DB) GetOwners() []*model.Owner {
 	res, err := collection.Find(ctx, bson.M{})
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer res.Close(ctx)
@@ -104,7 +108,55 @@ func (db *DB) GetOwners() []*model.Owner {
 		owners = append(owners, singleOwner)
 	}
 
-	return owners
+	return owners, err
 }
 
+func (db *DB) GetProjects() ([]*model.Project, error) {
+	collection := colHelper(db, "project")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var projects []*model.Project
+	defer cancel()
 
+	res, err := collection.Find(ctx, bson.M{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Close(ctx)
+	for res.Next(ctx) {
+		var singleProject *model.Project
+		if err = res.Decode(&singleProject); err != nil {
+			log.Fatal(err)
+		}
+		projects = append(projects, singleProject)
+	}
+
+	return projects, err
+}
+
+func (db *DB) SingleOwner(ID string) (*model.Owner, error) {
+	collection := colHelper(db, "owner")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var owner *model.Owner
+	defer cancel()
+
+	objId, _ := primitive.ObjectIDFromHex(ID)
+
+	err := collection.FindOne(ctx, bson.M{"_id": objId}).Decode(&owner)
+
+	return owner, err
+}
+
+func (db *DB) SingleProject(ID string) (*model.Project, error) {
+	collection := colHelper(db, "project")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var project *model.Project
+	defer cancel()
+
+	objId, _ := primitive.ObjectIDFromHex(ID)
+
+	err := collection.FindOne(ctx, bson.M{"_id": objId}).Decode(&project)
+
+	return project, err
+}
