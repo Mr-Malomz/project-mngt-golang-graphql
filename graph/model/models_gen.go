@@ -9,11 +9,11 @@ import (
 )
 
 type FetchOwner struct {
-	ID string `json:"id"`
+	ID string `json:"id" bson:"_id"`
 }
 
 type FetchProject struct {
-	ID string `json:"id"`
+	ID string `json:"id" bson:"_id"`
 }
 
 type NewOwner struct {
@@ -30,14 +30,14 @@ type NewProject struct {
 }
 
 type Owner struct {
-	ID    string `json:"_id"`
+	ID    string `json:"_id" bson:"_id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Phone string `json:"phone"`
 }
 
 type Project struct {
-	ID          string `json:"_id"`
+	ID          string `json:"_id" bson:"_id"`
 	OwnerID     string `json:"ownerId"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
