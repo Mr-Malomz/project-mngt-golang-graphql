@@ -13,13 +13,6 @@ type Project {
   status: Status!
 }
 
-type Query {
-  owners: [Owner!]!
-  projects: [Project!]!
-  owner(input: FetchOwner): Owner!
-  project(input: FetchProject): Project!
-}
-
 enum Status {
   NOT_STARTED
   IN_PROGRESS
@@ -45,6 +38,13 @@ input NewProject {
   name: String!
   description: String!
   status: Status!
+}
+
+type Query {
+  owners: [Owner!]!
+  projects: [Project!]!
+  owner(input: FetchOwner): Owner!
+  project(input: FetchProject): Project!
 }
 
 type Mutation {
